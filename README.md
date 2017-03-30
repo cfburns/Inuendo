@@ -1,4 +1,4 @@
-# Inuendo
+# Inuendo (Coming to GitHub May, 2017)
 Inuendo - Data virtualization engine
 
 Inuendo, in short, is the virtualization of data. Traditionally, data has been imprisoned in physical tables with fixed record layouts. The limitations of such structure have inhibited developers and the users they support, for decades. By virtualizing the data instead, the majority of these limitations are eliminated, resulting in simpler development, maintenance and troubleshooting of applications.  Inuendo treats all business objects (a.k.a. Entities) the same, regardless of their role in the supply chain. This allows entities of lesser obvious importance to produce equally valuable business intelligence.
