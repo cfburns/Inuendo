@@ -1,0 +1,697 @@
+/******************************************************************************/
+/*                                                                            */
+/*  Inuendo 1.2 (Alpha release) - INSTALLATION SCRIPT                         */
+/*                                                                            */
+/*  Copyright (C) 2012, 2017  Christopher F. Burns Sr.                        */
+/*    c/o The Inuendo Project (http://inuendo.us).                            */
+/*                                                                            */
+/*  This program is free software: you can redistribute it and/or modify      */
+/*  it under the terms of the GNU General Public License as published by      */
+/*  the Free Software Foundation, either version 3 of the License, or         */
+/*  (at your option) any later version.                                       */
+/*                                                                            */
+/*  This program is distributed in the hope that it will be useful,           */
+/*  but WITHOUT ANY WARRANTY; without even the implied warranty of            */
+/*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             */
+/*  GNU General Public License for more details.                              */
+/*                                                                            */
+/*  You should have received a copy of the GNU General Public License         */
+/*  along with this program.  If not, see <http://www.gnu.org/licenses/>.     */
+/*                                                                            */
+/******************************************************************************/
+
+
+/******************************************************************************/
+/*  HOUSEKEEPING                                                              */
+/******************************************************************************/
+
+             PGM        PARM(&OBJLIB &DTALIB &USRPRF &PASPHR &ENBJRN)
+
+             DCLF       FILE(QADSPOBJ) OPNID(A)
+             DCLF       FILE(QAFDMBRL) OPNID(B)
+
+             DCL        VAR(&SQUOTE) TYPE(*CHAR) LEN(1) VALUE(X'7D')
+             DCL        VAR(&ENBJRN) TYPE(*CHAR) LEN(4)
+             DCL        VAR(&OBJLIB) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&DTALIB) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&USRPRF) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&CURLIB) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&TBLNAM) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&TRGPGM) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&SRCSAV) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&DELTRG) TYPE(*CHAR) LEN(32)
+             DCL        VAR(&UPDTRG) TYPE(*CHAR) LEN(32)
+             DCL        VAR(&PASPHR) TYPE(*CHAR) LEN(64)
+             DCL        VAR(&SRCPTH) TYPE(*CHAR) LEN(64)
+             DCL        VAR(&LIBPTH) TYPE(*CHAR) LEN(64)
+             DCL        VAR(&MBRPTH) TYPE(*CHAR) LEN(64)
+             DCL        VAR(&SRCDTA) TYPE(*CHAR) LEN(100)
+             DCL        VAR(&ERRTXT) TYPE(*CHAR) LEN(128)
+             DCL        VAR(&SQLSTM) TYPE(*CHAR) LEN(256)
+
+             RTVJOBA    CURLIB(&CURLIB)
+
+/******************************************************************************/
+/*  CREATE SPECIFIED LIBRARIES AND USER PROFILE.                              */
+/******************************************************************************/
+
+             CRTLIB     LIB(&OBJLIB)
+                        MONMSG     MSGID(CPF0000) EXEC(DO)
+                        SNDPGMMSG  MSG('Specified object library already +
+                                     exists.')
+                        GOTO       CMDLBL(EXIT)
+                        ENDDO
+
+             CHKOBJ     OBJ(&DTALIB) OBJTYPE(*LIB)
+
+             MONMSG     MSGID(CPF9801) EXEC(DO)
+
+                        CHGVAR     VAR(&SQLSTM) VALUE('CREATE SCHEMA' *BCAT +
+                          &DTALIB)
+
+                        RUNSQL     SQL(&SQLSTM)
+
+                        MONMSG     MSGID(SQL0000) EXEC(CHGVAR VAR(&ERRTXT) +
+                          VALUE('Could not create schema' *BCAT +
+                          &DTALIB *TCAT '.'))
+
+                        IF         COND(&ERRTXT *EQ ' ') THEN(GOTO +
+                          CMDLBL(USRPRF))
+
+                        ENDDO
+
+             IF         COND(&ERRTXT *EQ ' ') THEN(CHGVAR +
+                          VAR(&ERRTXT) VALUE('Specified data +
+                          library already exists.'))
+
+             SNDPGMMSG  MSG(&ERRTXT)
+
+             DLTLIB     LIB(&OBJLIB)
+
+             GOTO       CMDLBL(EXIT)
+
+ USRPRF:     CRTUSRPRF  USRPRF(&USRPRF) PWDEXP(*YES) USRCLS(*PGMR) +
+                          CURLIB(&OBJLIB) INLPGM(*NONE) +
+                          INLMNU(*SIGNOFF) LMTCPB(*YES)
+                        MONMSG     MSGID(CPF0000)
+
+             CHGOBJOWN  OBJ(&OBJLIB) OBJTYPE(*LIB) NEWOWN(&USRPRF) +
+                          CUROWNAUT(*REVOKE)
+                        MONMSG     MSGID(CPF0000)
+
+             CHGOBJOWN  OBJ(&DTALIB) OBJTYPE(*LIB) NEWOWN(&USRPRF) +
+                          CUROWNAUT(*REVOKE)
+                        MONMSG     MSGID(CPF0000)
+
+/******************************************************************************/
+/*  RESTORE SOURCE CODE AND MENU OBJECTS                                      */
+/******************************************************************************/
+
+             CHGCURLIB  CURLIB(&OBJLIB)
+
+             RSTOBJ     OBJ(Q*) SAVLIB(INUENDOSRC) DEV(*SAVF) +
+                          OBJTYPE(*FILE) SAVF(QTEMP/INUENDOSRC) +
+                          MBROPT(*ALL) ALWOBJDIF(*ALL) RSTLIB(&OBJLIB)
+                        MONMSG     MSGID(CPF0000)
+
+             MOVOBJ     OBJ(QTEMP/INUENDO) OBJTYPE(*FILE) +
+                          TOLIB(&OBJLIB)
+                        MONMSG     MSGID(CPF0000)
+
+             MOVOBJ     OBJ(QTEMP/INUENDO) OBJTYPE(*MSGF) +
+                          TOLIB(&OBJLIB)
+                        MONMSG     MSGID(CPF0000)
+
+/******************************************************************************/
+/*  BUILD BASE TABLES.                                                        */
+/******************************************************************************/
+
+             CHGCURLIB  CURLIB(&DTALIB)
+
+             RUNSQLSTM  SRCFILE(&OBJLIB/QTXTSRC) SRCMBR(INUENDO) +
+                          COMMIT(*NONE) ERRLVL(40) DFTRDBCOL(*NONE)
+                        MONMSG     MSGID(SQL0000)
+
+             CHGCURLIB  CURLIB(&OBJLIB)
+
+             ADDLIBLE   LIB(&DTALIB) POSITION(*FIRST)
+                        MONMSG     MSGID(SQL0000)
+
+             IF         COND(&ENBJRN *NE '*YES') THEN(DO)
+
+             ENDJRNPF   FILE(&DTALIB/*ALLLIB)
+                        MONMSG     MSGID(SQL0000 CPF0000)
+
+             ENDDO
+
+
+/******************************************************************************/
+/*  VERIFY RPG COMPATIBILITY.                                                 */
+/******************************************************************************/
+
+             CRTBNDRPG  PGM(QTEMP/VERIFYRPG) SRCFILE(&OBJLIB/QRPGLESRC) +
+                          OUTPUT(*NONE)
+
+             MONMSG     MSGID(CPF0000) EXEC(DO)
+
+                        SNDPGMMSG  MSG('System does not meet OS release and/or +
+                          PTF requirements.')
+
+                        GOTO       CMDLBL(EXIT)
+
+                        ENDDO
+
+
+/******************************************************************************/
+/*  BUILD ENCRYPTION/DECRYPING *SRVPGM USING SPECIFIED PASSPHRASE.            */
+/******************************************************************************/
+
+             CRTBNDDIR  BNDDIR(&OBJLIB/INUENDO)
+                        MONMSG     MSGID(CPF0000)
+
+             OVRDBF     FILE(QRPGLESRC) TOFILE(&OBJLIB/QRPGLESRC) +
+                          MBR(STDCRYPFNC) OVRSCOPE(*CALLLVL)
+
+             CHGVAR     VAR(&SRCDTA) VALUE('           ' *CAT +
+                          &SQUOTE *TCAT &SQUOTE *TCAT &PASPHR *TCAT +
+                          &SQUOTE *TCAT &SQUOTE)
+
+             CHGVAR     VAR(&SQLSTM) VALUE('UPDATE QRPGLESRC SET +
+                          SRCDTA = ' *TCAT &SQUOTE *BCAT &SRCDTA +
+                          *TCAT &SQUOTE *BCAT 'WHERE SRCDTA LIKE' +
+                          *BCAT &SQUOTE *TCAT 'PASS%' *BCAT &SQUOTE)
+
+             RUNSQL     SQL(&SQLSTM) COMMIT(*NONE)
+
+             DLTOVR     FILE(QRPGLESRC) LVL(*)
+
+             CRTSQLRPGI OBJ(&OBJLIB/STDCRYPFNC) +
+                          SRCFILE(&OBJLIB/QRPGLESRC) COMMIT(*NONE) +
+                          OBJTYPE(*MODULE) REPLACE(*YES) DBGVIEW(*NONE)
+                        MONMSG     MSGID(CPF0000)
+
+             CRTSRVPGM  SRVPGM(&OBJLIB/STDCRYPFNC) +
+                          SRCFILE(&OBJLIB/QSRVSRC) BNDDIR(INUENDO) +
+                          ACTGRP(INUENDO) OPTION(*DUPPROC) +
+                          REPLACE(*YES) AUT(*ALL)
+                        MONMSG     MSGID(CPF0000)
+
+             DLTMOD     MODULE(&OBJLIB/STDCRYPFNC)
+                        MONMSG     MSGID(CPF0000)
+
+             ADDBNDDIRE BNDDIR(&OBJLIB/INUENDO) OBJ((STDCRYPFNC +
+                          *SRVPGM *IMMED))
+                        MONMSG     MSGID(CPF0000)
+
+             RMVM       FILE(&OBJLIB/QRPGLESRC) MBR(STDCRYPFNC)
+                        MONMSG     MSGID(CPF0000)
+
+/******************************************************************************/
+/*  BUILD SERVICE PROGRAMS FOR STANDARD I/O FUNCTIONS AND BUSINESS RULES.     */
+/******************************************************************************/
+
+             CRTRPGMOD  MODULE(&OBJLIB/WHODUNNIT) +
+                          SRCFILE(&OBJLIB/QRPGLESRC) DBGVIEW(*ALL) +
+                          REPLACE(*YES)
+                        MONMSG     MSGID(CPF0000)
+
+             CRTSRVPGM  SRVPGM(&OBJLIB/WHODUNNIT) +
+                          SRCFILE(&OBJLIB/QSRVSRC) BNDDIR(INUENDO) +
+                          ACTGRP(INUENDO) OPTION(*DUPPROC) +
+                          REPLACE(*YES) AUT(*ALL)
+                        MONMSG     MSGID(CPF0000)
+
+             DLTMOD     MODULE(&OBJLIB/WHODUNNIT)
+                        MONMSG     MSGID(CPF0000)
+
+             ADDBNDDIRE BNDDIR(&OBJLIB/INUENDO) OBJ((WHODUNNIT +
+                          *SRVPGM *IMMED))
+                        MONMSG     MSGID(CPF0000)
+
+
+             CRTSQLRPGI OBJ(&OBJLIB/STDENTINP) +
+                          SRCFILE(&OBJLIB/QRPGLESRC) COMMIT(*NONE) +
+                          OBJTYPE(*MODULE) RPGPPOPT(*LVL2) +
+                          DATFMT(*ISO) REPLACE(*YES) DBGVIEW(*SOURCE)
+                        MONMSG     MSGID(CPF0000)
+
+             CRTSRVPGM  SRVPGM(&OBJLIB/STDENTINP) +
+                          SRCFILE(&OBJLIB/QSRVSRC) BNDDIR(INUENDO) +
+                          ACTGRP(INUENDO) OPTION(*DUPPROC) +
+                          REPLACE(*YES) AUT(*ALL)
+                        MONMSG     MSGID(CPF0000)
+
+             DLTMOD     MODULE(&OBJLIB/STDENTINP)
+                        MONMSG     MSGID(CPF0000)
+
+             ADDBNDDIRE BNDDIR(&OBJLIB/INUENDO) OBJ((STDENTINP +
+                          *SRVPGM *IMMED))
+                        MONMSG     MSGID(CPF0000)
+
+
+             CRTSQLRPGI OBJ(&OBJLIB/STDENTOUT) +
+                          SRCFILE(&OBJLIB/QRPGLESRC) COMMIT(*NONE) +
+                          OBJTYPE(*MODULE) RPGPPOPT(*LVL2) +
+                          DATFMT(*ISO) REPLACE(*YES) DBGVIEW(*SOURCE)
+                        MONMSG     MSGID(CPF0000)
+
+             CRTSRVPGM  SRVPGM(&OBJLIB/STDENTOUT) +
+                          SRCFILE(&OBJLIB/QSRVSRC) BNDDIR(INUENDO) +
+                          ACTGRP(INUENDO) OPTION(*DUPPROC) +
+                          REPLACE(*YES) AUT(*ALL)
+                        MONMSG     MSGID(CPF0000)
+
+             DLTMOD     MODULE(&OBJLIB/STDENTOUT)
+                        MONMSG     MSGID(CPF0000)
+
+             ADDBNDDIRE BNDDIR(&OBJLIB/INUENDO) OBJ((STDENTOUT +
+                          *SRVPGM *IMMED))
+                        MONMSG     MSGID(CPF0000)
+
+
+             CRTDSPF    FILE(&OBJLIB/STDENTRULE) +
+                          SRCFILE(&OBJLIB/QDDSSRC) RSTDSP(*YES) +
+                          REPLACE(*YES)
+                        MONMSG     MSGID(CPF0000)
+
+             CRTSQLRPGI OBJ(&OBJLIB/STDENTRULE) +
+                          SRCFILE(&OBJLIB/QRPGLESRC) COMMIT(*NONE) +
+                          OBJTYPE(*MODULE) RPGPPOPT(*LVL2) +
+                          DATFMT(*ISO) REPLACE(*YES) DBGVIEW(*SOURCE)
+                        MONMSG     MSGID(CPF0000)
+
+             CRTSRVPGM  SRVPGM(&OBJLIB/STDENTRULE) +
+                          SRCFILE(&OBJLIB/QSRVSRC) BNDDIR(INUENDO) +
+                          ACTGRP(INUENDO) OPTION(*DUPPROC) +
+                          REPLACE(*YES) AUT(*ALL)
+                        MONMSG     MSGID(CPF0000)
+
+             DLTMOD     MODULE(&OBJLIB/STDENTRULE)
+                        MONMSG     MSGID(CPF0000)
+
+             ADDBNDDIRE BNDDIR(&OBJLIB/INUENDO) OBJ((STDENTRULE +
+                          *SRVPGM *IMMED))
+                        MONMSG     MSGID(CPF0000)
+
+
+             CRTSQLRPGI OBJ(&OBJLIB/STDENTSQL1) +
+                          SRCFILE(&OBJLIB/QRPGLESRC) COMMIT(*NONE) +
+                          OBJTYPE(*MODULE) RPGPPOPT(*LVL2) +
+                          DATFMT(*ISO) REPLACE(*YES) DBGVIEW(*SOURCE)
+                        MONMSG     MSGID(CPF0000)
+
+             CRTSRVPGM  SRVPGM(&OBJLIB/STDENTSQL1) +
+                          SRCFILE(&OBJLIB/QSRVSRC) BNDDIR(INUENDO) +
+                          ACTGRP(INUENDO) OPTION(*DUPPROC) +
+                          REPLACE(*YES) AUT(*ALL)
+                        MONMSG     MSGID(CPF0000)
+
+             DLTMOD     MODULE(&OBJLIB/STDENTSQL1)
+                        MONMSG     MSGID(CPF0000)
+
+             ADDBNDDIRE BNDDIR(&OBJLIB/INUENDO) OBJ((STDENTSQL1 +
+                          *SRVPGM *IMMED))
+                        MONMSG     MSGID(CPF0000)
+
+
+             CRTSQLRPGI OBJ(&OBJLIB/STDENTSQL2) +
+                          SRCFILE(&OBJLIB/QRPGLESRC) COMMIT(*NONE) +
+                          OBJTYPE(*MODULE) RPGPPOPT(*LVL2) +
+                          DATFMT(*ISO) REPLACE(*YES) DBGVIEW(*SOURCE)
+                        MONMSG     MSGID(CPF0000)
+
+             CRTSRVPGM  SRVPGM(&OBJLIB/STDENTSQL2) +
+                          SRCFILE(&OBJLIB/QSRVSRC) BNDDIR(INUENDO) +
+                          ACTGRP(INUENDO) OPTION(*DUPPROC) +
+                          REPLACE(*YES) AUT(*ALL)
+                        MONMSG     MSGID(CPF0000)
+
+             DLTMOD     MODULE(&OBJLIB/STDENTSQL2)
+                        MONMSG     MSGID(CPF0000)
+
+             ADDBNDDIRE BNDDIR(&OBJLIB/INUENDO) OBJ((STDENTSQL2 +
+                          *SRVPGM *IMMED))
+                        MONMSG     MSGID(CPF0000)
+
+
+             CRTSQLRPGI OBJ(&OBJLIB/STDENTUTIL) +
+                          SRCFILE(&OBJLIB/QRPGLESRC) COMMIT(*NONE) +
+                          OBJTYPE(*MODULE) RPGPPOPT(*LVL2) +
+                          DATFMT(*ISO) REPLACE(*YES) DBGVIEW(*SOURCE)
+                        MONMSG     MSGID(CPF0000)
+
+             CRTSRVPGM  SRVPGM(&OBJLIB/STDENTUTIL) +
+                          SRCFILE(&OBJLIB/QSRVSRC) BNDDIR(INUENDO) +
+                          ACTGRP(INUENDO) OPTION(*DUPPROC) +
+                          REPLACE(*YES) AUT(*ALL)
+                        MONMSG     MSGID(CPF0000)
+
+             DLTMOD     MODULE(&OBJLIB/STDENTUTIL)
+                        MONMSG     MSGID(CPF0000)
+
+             ADDBNDDIRE BNDDIR(&OBJLIB/INUENDO) OBJ((STDENTUTIL +
+                          *SRVPGM *IMMED))
+                        MONMSG     MSGID(CPF0000)
+
+/******************************************************************************/
+/*  TEMPORAL INTEGRITY TRIGGERS.                                              */
+/******************************************************************************/
+
+             CHGVAR     VAR(&TBLNAM) VALUE('ENTHEAD')
+             CALLSUBR   SUBR(TMPINTTRG)
+
+             CHGVAR     VAR(&TBLNAM) VALUE('ENTDATE')
+             CALLSUBR   SUBR(TMPINTTRG)
+
+             CHGVAR     VAR(&TBLNAM) VALUE('ENTFLAG')
+             CALLSUBR   SUBR(TMPINTTRG)
+
+             CHGVAR     VAR(&TBLNAM) VALUE('ENTLINK')
+             CALLSUBR   SUBR(TMPINTTRG)
+
+             CHGVAR     VAR(&TBLNAM) VALUE('ENTNOTE')
+             CALLSUBR   SUBR(TMPINTTRG)
+
+             CHGVAR     VAR(&TBLNAM) VALUE('ENTNOTX')
+             CALLSUBR   SUBR(TMPINTTRG)
+
+             CHGVAR     VAR(&TBLNAM) VALUE('ENTNUMB')
+             CALLSUBR   SUBR(TMPINTTRG)
+
+             CHGVAR     VAR(&TBLNAM) VALUE('ENTNUMX')
+             CALLSUBR   SUBR(TMPINTTRG)
+
+             CHGVAR     VAR(&TBLNAM) VALUE('ENTDATX')
+             CALLSUBR   SUBR(TMPINTTRG)
+
+/******************************************************************************/
+/*  BUILD SQL USER DEFINED FUNCTIONS ASSOCIATED WITH *SRVPGM PROCEDURES.      */
+/******************************************************************************/
+
+             RUNSQLSTM  SRCFILE(&OBJLIB/QTXTSRC) SRCMBR(WHODUNNIT) +
+                          COMMIT(*NONE) ERRLVL(40)
+                        MONMSG     MSGID(SQL0000)
+
+             RUNSQLSTM  SRCFILE(&OBJLIB/QTXTSRC) SRCMBR(STDENTINP) +
+                          COMMIT(*NONE) ERRLVL(40)
+                        MONMSG     MSGID(SQL0000)
+
+             RUNSQLSTM  SRCFILE(&OBJLIB/QTXTSRC) SRCMBR(STDENTOUT) +
+                          COMMIT(*NONE) ERRLVL(40)
+                        MONMSG     MSGID(SQL0000)
+
+             RUNSQLSTM  SRCFILE(&OBJLIB/QTXTSRC) SRCMBR(STDENTRULE) +
+                          COMMIT(*NONE) ERRLVL(40)
+                        MONMSG     MSGID(SQL0000)
+
+             RUNSQLSTM  SRCFILE(&OBJLIB/QTXTSRC) SRCMBR(STDENTUTIL) +
+                          COMMIT(*NONE) ERRLVL(40)
+                        MONMSG     MSGID(SQL0000)
+
+/******************************************************************************/
+/*  STATISTICS AND ANALYTICS FUNCTIONS (DEPENDENT ON ABOVE SQL FUNCTIONS).    */
+/******************************************************************************/
+
+             CRTSQLRPGI OBJ(&OBJLIB/STDPRPAGGR) +
+                          SRCFILE(&OBJLIB/QRPGLESRC) COMMIT(*NONE) +
+                          OBJTYPE(*MODULE) RPGPPOPT(*LVL2) +
+                          DATFMT(*ISO) REPLACE(*YES) DBGVIEW(*SOURCE)
+                        MONMSG     MSGID(CPF0000)
+
+             CRTSRVPGM  SRVPGM(&OBJLIB/STDPRPAGGR) +
+                          SRCFILE(&OBJLIB/QSRVSRC) BNDDIR(INUENDO) +
+                          ACTGRP(INUENDO) OPTION(*DUPPROC) +
+                          REPLACE(*YES) AUT(*ALL)
+                        MONMSG     MSGID(CPF0000)
+
+             DLTMOD     MODULE(&OBJLIB/STDPRPAGGR)
+                        MONMSG     MSGID(CPF0000)
+
+             ADDBNDDIRE BNDDIR(&OBJLIB/INUENDO) OBJ((STDPRPAGGR +
+                          *SRVPGM *IMMED))
+                        MONMSG     MSGID(CPF0000)
+
+             RUNSQLSTM  SRCFILE(&OBJLIB/QTXTSRC) SRCMBR(STDPRPAGGR) +
+                          COMMIT(*NONE) ERRLVL(40)
+                        MONMSG     MSGID(SQL0000)
+
+
+             CRTSQLRPGI OBJ(&OBJLIB/STDENTAGGR) +
+                          SRCFILE(&OBJLIB/QRPGLESRC) COMMIT(*NONE) +
+                          OBJTYPE(*MODULE) RPGPPOPT(*LVL2) +
+                          DATFMT(*ISO) REPLACE(*YES) DBGVIEW(*SOURCE)
+                        MONMSG     MSGID(CPF0000)
+
+             CRTSRVPGM  SRVPGM(&OBJLIB/STDENTAGGR) +
+                          SRCFILE(&OBJLIB/QSRVSRC) BNDDIR(INUENDO) +
+                          ACTGRP(INUENDO) OPTION(*DUPPROC) +
+                          REPLACE(*YES) AUT(*ALL)
+                        MONMSG     MSGID(CPF0000)
+
+             DLTMOD     MODULE(&OBJLIB/STDENTAGGR)
+                        MONMSG     MSGID(CPF0000)
+
+             ADDBNDDIRE BNDDIR(&OBJLIB/INUENDO) OBJ((STDENTAGGR +
+                          *SRVPGM *IMMED))
+                        MONMSG     MSGID(CPF0000)
+
+             RUNSQLSTM  SRCFILE(&OBJLIB/QTXTSRC) SRCMBR(STDENTAGGR) +
+                          COMMIT(*NONE) ERRLVL(40)
+                        MONMSG     MSGID(SQL0000)
+
+
+             CRTSQLRPGI OBJ(&OBJLIB/STDENTGRP) +
+                          SRCFILE(&OBJLIB/QRPGLESRC) COMMIT(*NONE) +
+                          OBJTYPE(*MODULE) RPGPPOPT(*LVL2) +
+                          DATFMT(*ISO) REPLACE(*YES) DBGVIEW(*SOURCE)
+                        MONMSG     MSGID(CPF0000)
+
+             CRTSRVPGM  SRVPGM(&OBJLIB/STDENTGRP) +
+                          SRCFILE(&OBJLIB/QSRVSRC) BNDDIR(INUENDO) +
+                          ACTGRP(INUENDO) OPTION(*DUPPROC) +
+                          REPLACE(*YES) AUT(*ALL)
+                        MONMSG     MSGID(CPF0000)
+
+             DLTMOD     MODULE(&OBJLIB/STDENTGRP)
+                        MONMSG     MSGID(CPF0000)
+
+             ADDBNDDIRE BNDDIR(&OBJLIB/INUENDO) OBJ((STDENTGRP +
+                          *SRVPGM *IMMED))
+                        MONMSG     MSGID(CPF0000)
+
+             RUNSQLSTM  SRCFILE(&OBJLIB/QTXTSRC) SRCMBR(STDENTGRP) +
+                          COMMIT(*NONE) ERRLVL(40)
+                        MONMSG     MSGID(SQL0000)
+
+/******************************************************************************/
+/*  TIME TRAVEL SUPPORT OBJECTS.                                              */
+/******************************************************************************/
+
+             CRTCLMOD   MODULE(&OBJLIB/SETSSNMOM) +
+                          SRCFILE(&OBJLIB/QCLSRC) REPLACE(*YES) +
+                          DBGVIEW(*ALL)
+                        MONMSG     MSGID(CPF0000)
+
+             CRTPGM     PGM(&OBJLIB/SETSSNMOM) +
+                          MODULE(&OBJLIB/SETSSNMOM) BNDDIR(INUENDO) +
+                          ACTGRP(INUENDO) REPLACE(*YES)
+                        MONMSG     MSGID(CPF0000)
+
+             DLTMOD     MODULE(&OBJLIB/SETSSNMOM)
+                        MONMSG     MSGID(CPF0000)
+
+             CRTCMD     CMD(&OBJLIB/SETSSNMOM) +
+                          PGM(&OBJLIB/SETSSNMOM) +
+                          SRCFILE(&OBJLIB/QCMDSRC) AUT(*ALL) +
+                          REPLACE(*YES)
+                        MONMSG     MSGID(CPF0000)
+
+             CRTCLMOD   MODULE(&OBJLIB/CLRSSNMOM) +
+                          SRCFILE(&OBJLIB/QCLSRC) REPLACE(*YES) +
+                          DBGVIEW(*ALL)
+                        MONMSG     MSGID(CPF0000)
+
+             CRTPGM     PGM(&OBJLIB/CLRSSNMOM) +
+                          MODULE(&OBJLIB/CLRSSNMOM) BNDDIR(INUENDO) +
+                          ACTGRP(INUENDO) REPLACE(*YES)
+                        MONMSG     MSGID(CPF0000)
+
+             DLTMOD     MODULE(&OBJLIB/CLRSSNMOM)
+                        MONMSG     MSGID(CPF0000)
+
+             CRTCMD     CMD(&OBJLIB/CLRSSNMOM) +
+                          PGM(&OBJLIB/CLRSSNMOM) +
+                          SRCFILE(&OBJLIB/QCMDSRC) AUT(*ALL) +
+                          REPLACE(*YES)
+                        MONMSG     MSGID(CPF0000)
+
+             CRTCLMOD   MODULE(&OBJLIB/DSPSSNMOM) +
+                          SRCFILE(&OBJLIB/QCLSRC) REPLACE(*YES) +
+                          DBGVIEW(*ALL)
+                        MONMSG     MSGID(CPF0000)
+
+             CRTPGM     PGM(&OBJLIB/DSPSSNMOM) +
+                          MODULE(&OBJLIB/DSPSSNMOM) BNDDIR(INUENDO) +
+                          ACTGRP(INUENDO) REPLACE(*YES)
+                        MONMSG     MSGID(CPF0000)
+
+             DLTMOD     MODULE(&OBJLIB/DSPSSNMOM)
+                        MONMSG     MSGID(CPF0000)
+
+             CRTCMD     CMD(&OBJLIB/DSPSSNMOM) +
+                          PGM(&OBJLIB/DSPSSNMOM) +
+                          SRCFILE(&OBJLIB/QCMDSRC) AUT(*ALL) +
+                          REPLACE(*YES)
+                        MONMSG     MSGID(CPF0000)
+
+/******************************************************************************/
+/*  OTHER MISCELLANEOUS OBJECTS.                                              */
+/******************************************************************************/
+
+             CRTDSPF    FILE(&OBJLIB/CLASSMNTFM) +
+                          SRCFILE(&OBJLIB/QDDSSRC) RSTDSP(*YES) +
+                          REPLACE(*YES)
+                        MONMSG     MSGID(CPF0000)
+
+             CRTSQLRPGI OBJ(&OBJLIB/CLASSMNT) +
+                          SRCFILE(&OBJLIB/QRPGLESRC) COMMIT(*NONE) +
+                          RPGPPOPT(*LVL2) DATFMT(*ISO) +
+                          REPLACE(*YES) DBGVIEW(*SOURCE)
+                        MONMSG     MSGID(SQL0000)
+
+             CRTMNU     MENU(&OBJLIB/INUENDO) TYPE(*DSPF) +
+                          DSPF(&OBJLIB/INUENDO) +
+                          MSGF(&OBJLIB/INUENDO) CMDLIN(*LONG) +
+                          DSPKEY(*YES) CURLIB(*NOCHG) +
+                          PRDLIB(*NOCHG) REPLACE(*YES) +
+                          TEXT('Inuendo Main Menu')
+                        MONMSG     MSGID(CPF0000)
+
+             CRTJOBD    JOBD(&OBJLIB/INUENDO) INLLIBL(&DTALIB &OBJLIB)
+                        MONMSG     MSGID(CPF0000)
+
+             CHGUSRPRF  USRPRF(&USRPRF) INLMNU(&OBJLIB/INUENDO) +
+                          JOBD(&OBJLIB/INUENDO)
+                        MONMSG     MSGID(CPF0000)
+
+/******************************************************************************/
+/*  CHANGE OWNERSHIP OF ALL OBJECTS IN SPECIFIED LIBRARIES TO SPECIFIED USER. */
+/******************************************************************************/
+
+             DSPOBJD    OBJ(&OBJLIB/*ALL) OBJTYPE(*ALL) +
+                          OUTPUT(*OUTFILE) OUTFILE(QTEMP/QADSPOBJ) +
+                          OUTMBR(*FIRST *REPLACE)
+
+             DSPOBJD    OBJ(&DTALIB/*ALL) OBJTYPE(*ALL) +
+                          OUTPUT(*OUTFILE) OUTFILE(QTEMP/QADSPOBJ) +
+                          OUTMBR(*FIRST *ADD)
+
+             OVRDBF     FILE(QADSPOBJ) TOFILE(QTEMP/QADSPOBJ) +
+                          OVRSCOPE(*CALLLVL)
+
+ NXTOBJ:     RCVF       RCDFMT(QLIDOBJD) OPNID(A)
+                        MONMSG     MSGID(CPF0000) EXEC(GOTO CMDLBL(ENDOBJ))
+
+             CHGOBJOWN  OBJ(&A_ODLBNM/&A_ODOBNM) OBJTYPE(&A_ODOBTP) +
+                          NEWOWN(&USRPRF)
+
+             GRTOBJAUT  OBJ(&A_ODLBNM/&A_ODOBNM) OBJTYPE(&A_ODOBTP) +
+                          USER(*PUBLIC) AUT(*CHANGE) REPLACE(*YES)
+                        MONMSG     MSGID(CPF0000)
+
+             GOTO       CMDLBL(NXTOBJ)
+
+ ENDOBJ:
+
+/******************************************************************************/
+/*  COPY SOURCE TO ROOT FILE SYSTEM.                                          */
+/******************************************************************************/
+
+             CHGVAR     VAR(&SRCPTH) VALUE('/' *TCAT &OBJLIB)
+
+             MKDIR      DIR(&SRCPTH) DTAAUT(*RWX) OBJAUT(*ALL)
+                        MONMSG     MSGID(CPF0000)
+
+             DSPFD      FILE(&OBJLIB/Q*) TYPE(*MBRLIST) +
+                          OUTPUT(*OUTFILE) OUTFILE(QTEMP/QAFDMBRL) +
+                          OUTMBR(*FIRST *REPLACE)
+
+             OVRDBF     FILE(QAFDMBRL) TOFILE(QTEMP/QAFDMBRL)
+
+ NXTMBR:     RCVF       RCDFMT(QWHFDML) OPNID(B)
+                        MONMSG     MSGID(CPF0000) EXEC(GOTO CMDLBL(ENDMBR))
+
+             IF         COND(&B_MLFILE *NE &SRCSAV) THEN(DO)
+
+                        CHGVAR     VAR(&SRCPTH) VALUE('/' *TCAT &OBJLIB *TCAT +
+                                     '/' *TCAT &B_MLFILE)
+
+                        MKDIR      DIR(&SRCPTH) DTAAUT(*RWX) OBJAUT(*ALL)
+                                   MONMSG     MSGID(CPF0000)
+
+                        CHGVAR     VAR(&SRCSAV) VALUE(&B_MLFILE)
+
+                        ENDDO
+
+             CHGVAR     VAR(&LIBPTH) VALUE('/QSYS.LIB/' *TCAT &B_MLLIB +
+                          *TCAT '.LIB/' *TCAT &B_MLFILE *TCAT +
+                          '.FILE/' *TCAT &B_MLNAME *TCAT '.MBR')
+
+             CHGVAR     VAR(&MBRPTH) VALUE(&SRCPTH *TCAT '/' *TCAT +
+                          &B_MLNAME *TCAT '.' *TCAT &B_MLSEU2)
+
+             CPYTOSTMF  FROMMBR(&LIBPTH) TOSTMF(&MBRPTH) +
+                          STMFOPT(*REPLACE) STMFCODPAG(*PCASCII)
+                        MONMSG     MSGID(CPF0000)
+
+
+             GOTO       CMDLBL(NXTMBR)
+
+ ENDMBR:     CLRLIB     LIB(INUENDOINS)
+
+
+/******************************************************************************/
+/*  SET CURRENT LIBRARY BACK TO ORIGINAL VALUE.                               */
+/******************************************************************************/
+
+             RMVLIBLE   LIB(&DTALIB)
+
+             CHGCURLIB  CURLIB(&CURLIB)
+                        MONMSG     MSGID(CPF0000) EXEC(CHGCURLIB +
+                          CURLIB(*CRTDFT))
+
+             COMMIT
+               MONMSG     MSGID(CPF0000)
+
+/******************************************************************************/
+/*  TEMPORAL INTEGRITY TRIGGERS.                                              */
+/******************************************************************************/
+
+             SUBR       SUBR(TMPINTTRG)
+
+             CHGVAR     VAR(&DELTRG) VALUE(&TBLNAM *TCAT 'D')
+             CHGVAR     VAR(&UPDTRG) VALUE(&TBLNAM *TCAT 'U')
+             CHGVAR     VAR(&TRGPGM) VALUE('TMPINT' *TCAT +
+                          %SST(&TBLNAM 4 4))
+
+             CRTSQLRPGI OBJ(&OBJLIB/&TRGPGM) +
+                          SRCFILE(&OBJLIB/QRPGLESRC) COMMIT(*NONE) +
+                          RPGPPOPT(*LVL2) REPLACE(*YES) +
+                          DBGVIEW(*SOURCE)
+                        MONMSG     MSGID(CPF0000 RPG0000 SQL0000) EXEC(RTNSUBR)
+
+             ADDPFTRG   FILE(&DTALIB/&TBLNAM) TRGTIME(*AFTER) +
+                          TRGEVENT(*DELETE) PGM(&OBJLIB/&TRGPGM) +
+                          TRG(&DELTRG)
+                        MONMSG     MSGID(CPF0000)
+
+             ADDPFTRG   FILE(&DTALIB/&TBLNAM) TRGTIME(*BEFORE) +
+                          TRGEVENT(*UPDATE) PGM(&OBJLIB/&TRGPGM) +
+                          TRG(&UPDTRG) ALWREPCHG(*YES) +
+                          TRGUPDCND(*CHANGE)
+                        MONMSG     MSGID(CPF0000)
+
+             ENDSUBR
+
+ EXIT:       ENDPGM
+

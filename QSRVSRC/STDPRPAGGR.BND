@@ -1,0 +1,49 @@
+/******************************************************************************/
+/*                                                                            */
+/*  Inuendo 1.2 (Alpha release) - STANDARD PROPERTY AGGREGATE FUNCTIONS       */
+/*                                                                            */
+/*  Copyright (C) 2012, 2017  Christopher F. Burns Sr.                        */
+/*    c/o The Inuendo Project (http://inuendo.us).                            */
+/*                                                                            */
+/*  This program is free software: you can redistribute it and/or modify      */
+/*  it under the terms of the GNU General Public License as published by      */
+/*  the Free Software Foundation, either version 3 of the License, or         */
+/*  (at your option) any later version.                                       */
+/*                                                                            */
+/*  This program is distributed in the hope that it will be useful,           */
+/*  but WITHOUT ANY WARRANTY; without even the implied warranty of            */
+/*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             */
+/*  GNU General Public License for more details.                              */
+/*                                                                            */
+/*  You should have received a copy of the GNU General Public License         */
+/*  along with this program.  If not, see <http://www.gnu.org/licenses/>.     */
+/*                                                                            */
+/******************************************************************************/
+
+             STRPGMEXP  SIGNATURE('STDPRPAGGR')
+             EXPORT     SYMBOL(PROPERTYAVGDURING)
+             EXPORT     SYMBOL(PROPERTYAVGTHROUGH)
+             EXPORT     SYMBOL(PROPERTYAVGSINCE)
+             EXPORT     SYMBOL(PROPERTYAVG)
+             EXPORT     SYMBOL(PROPERTYMINDURING)
+             EXPORT     SYMBOL(PROPERTYMINTHROUGH)
+             EXPORT     SYMBOL(PROPERTYMINSINCE)
+             EXPORT     SYMBOL(PROPERTYMIN)
+             EXPORT     SYMBOL(PROPERTYMAXDURING)
+             EXPORT     SYMBOL(PROPERTYMAXTHROUGH)
+             EXPORT     SYMBOL(PROPERTYMAXSINCE)
+             EXPORT     SYMBOL(PROPERTYMAX)
+             EXPORT     SYMBOL(PROPERTYSUMDURING)
+             EXPORT     SYMBOL(PROPERTYSUMTHROUGH)
+             EXPORT     SYMBOL(PROPERTYSUMSINCE)
+             EXPORT     SYMBOL(PROPERTYSUM)
+             EXPORT     SYMBOL(PROPERTYCOUNTDURING)
+             EXPORT     SYMBOL(PROPERTYCOUNTTHROUGH)
+             EXPORT     SYMBOL(PROPERTYCOUNTSINCE)
+             EXPORT     SYMBOL(PROPERTYCOUNT)
+             EXPORT     SYMBOL(PROPERTYMEANDURING)
+             EXPORT     SYMBOL(PROPERTYMEANTHROUGH)
+             EXPORT     SYMBOL(PROPERTYMEANSINCE)
+             EXPORT     SYMBOL(PROPERTYMEAN)
+             ENDPGMEXP
+

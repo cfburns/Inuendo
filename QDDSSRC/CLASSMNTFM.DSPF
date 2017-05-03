@@ -1,0 +1,244 @@
+     A**************************************************************************
+     A*
+     A*  Inuendo 1.2 (Alpha release) - CLASS MAINTENANCE
+     A*
+     A*  Copyright (C) 2012, 2017  Christopher F. Burns Sr.
+     A*    c/o The Inuendo Project (http://inuendo.us).
+     A*
+     A*  This program is free software: you can redistribute it and/or modify
+     A*  it under the terms of the GNU General Public License as published by
+     A*  the Free Software Foundation, either version 3 of the License, or
+     A*  (at your option) any later version.
+     A*
+     A*  This program is distributed in the hope that it will be useful,
+     A*  but WITHOUT ANY WARRANTY; without even the implied warranty of
+     A*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     A*  GNU General Public License for more details.
+     A*
+     A*  You should have received a copy of the GNU General Public License
+     A*  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+     A*
+     A**************************************************************************
+     A*
+     A                                      DSPSIZ(24 80 *DS3)
+     A                                      INDARA
+     A*
+     A*  CLASS SUBFILE / ENTRY GRID
+     A*
+     A          R CLASSMNTS1                SFL
+     A                                      SFLNXTCHG
+     A            S1OPTION       1A  B  6  5
+     A N36                                  DSPATR(PR)
+     A N36                                  DSPATR(ND)
+     A                                      VALUES(' ' 'C' 'D' 'P')
+     A  36                                  COLOR(YLW)
+     A            S1CLASS       14A  O  6 10
+     A            S1DESCRIP     50A  O  6 26
+     A            S1PARCLASS    14A  H
+     A*
+     A          R CLASSMNTC1                SFLCTL(CLASSMNTS1)
+     A                                      CA03(03 'Exit')
+     A                                      CF06(06 'Create')
+     A                                      OVERLAY
+     A  31                                  SFLDSP
+     A  31                                  SFLDSPCTL
+     A N31                                  SFLCLR
+     A  31                                  SFLEND(*MORE)
+     A                                      SFLSIZ(0400)
+     A                                      SFLPAG(0016)
+     A  71                                  SFLMSG('Class name is required' 71)
+     A  72                                  SFLMSG('Class description is requir-
+     A                                      ed' 72)
+     A  73                                  SFLMSG('Class name already exists' -
+     A                                      73)
+     A                                  1  3'Opts:'
+     A                                  1 10'C=Change'
+     A                                  1 21'D=Delete'
+     A                                  1 32'P=Properties'
+     A                                  1 60' Class Maintenance  '
+     A                                      DSPATR(RI)
+     A                                      COLOR(BLU)
+     A            C1PGMNAM      10A  O  2 60
+     A                                  2 72TIME
+     A            C1USRPRF      10A  O  3 60
+     A                                  3 72DATE
+     A                                      EDTCDE(Y)
+     A                                  5  5'Op'
+     A                                      DSPATR(UL)
+     A                                  5 10'Class         '
+     A                                      DSPATR(UL)
+     A                                  5 26'Description                       -
+     A                                                      '
+     A                                      DSPATR(UL)
+     A                                  3  3'Find:'
+     A            C1FIND        14   B  3 10COLOR(YLW)
+     A*
+     A          R CLASSMNTK1
+     A                                      OVERLAY
+     A                                 24  2'F3=Exit'
+     A                                      COLOR(BLU)
+     A                                 24 33'F6=Create'
+     A                                      COLOR(BLU)
+     A                                 24 66'ENTER=Continue'
+     A                                      COLOR(BLU)
+     A*
+     A          R CLASSMNTW1
+     A                                      CA12(12 'Cancel')
+     A                                      WINDOW(14 8 9 66)
+     A                                      WDWBORDER((*COLOR BLU) (*DSPATR RI)-
+     A                                       (*CHAR '        '))
+     A                                  1  1'Press ENTER to'
+     A            W1ACTION       6A  O  1 16DSPATR(HI)
+     A                                  1 57'F12=Cancel'
+     A                                      COLOR(BLU)
+     A                                  3  1'Class         '
+     A                                      DSPATR(UL)
+     A                                  3 17'Description                       -
+     A                                                      '
+     A                                      DSPATR(UL)
+     A            W1CLASS       14A  B  4  1
+     A  32                                  COLOR(YLW)
+     A N32                                  DSPATR(PR)
+     A  71                                  ERRMSG('A class name is required.' -
+     A                                      71)
+     A  73                                  ERRMSG('Class name already exists.'-
+     A                                       73)
+     A  74                                  ERRMSG('Entities already exist for -
+     A                                      this class' 74)
+     A            W1DESCRIP     50A  B  4 17
+     A  33                                  COLOR(YLW)
+     A N33                                  DSPATR(PR)
+     A  72                                  ERRMSG('A description is required.'-
+     A                                       72)
+     A                                  6  1'Parent Class  '
+     A                                      DSPATR(UL)
+     A            W1PARCLASS    14A  B  7  1
+     A  33                                  COLOR(YLW)
+     A N33                                  DSPATR(PR)
+     A  75                                  ERRMSG('Invalid class name' 75)
+     A                                  7 17'(or blank for any class)'
+     A*
+     A*  PROPERTIES SUBFILE / ENTRY GRID
+     A*
+     A          R CLASSMNTS2                SFL
+     A                                      SFLNXTCHG
+     A            S2OPTION       1A  B  6  2
+     A  46                                  COLOR(YLW)
+     A N46                                  DSPATR(ND)
+     A N46                                  DSPATR(PR)
+     A                                      VALUES(' ' 'C' 'D')
+     A            S2PROPERTY    14A  O  6  4
+     A            S2DATATYPE     4A  O  6 19
+     A            S2SEQUENCE     4Y 0O  6 24EDTCDE(Z)
+     A            S2DESCRIP     50A  O  6 29
+     A            S2LNKCLASS    14A  H
+     A*
+     A          R CLASSMNTC2                SFLCTL(CLASSMNTS2)
+     A                                      SFLSIZ(0400)
+     A                                      SFLPAG(0016)
+     A                                      CA03(03 'Exit')
+     A                                      CF06(06 'Create')
+     A                                      CA12(12 'Cancel')
+     A                                      CF20(20 'Resequence')
+     A                                      OVERLAY
+     A  41                                  SFLDSP
+     A  41                                  SFLDSPCTL
+     A N41                                  SFLCLR
+     A  41                                  SFLEND(*MORE)
+     A                                  1  2'Class:'
+     A            C2CLASS       14A  O  1 10
+     A                                  1 60' Class Maintenance  '
+     A                                      DSPATR(RI)
+     A                                      COLOR(BLU)
+     A                                  2  2'Desc:'
+     A            C2DESCRIP     48A  O  2 10
+     A            C2PGMNAM      10A  O  2 60
+     A                                  2 72TIME
+     A                                  3  2'Opts:'
+     A                                  3 10'C=Change'
+     A                                  3 21'D=Delete'
+     A            C2USRPRF      10A  O  3 60
+     A                                  3 72DATE
+     A                                      EDTCDE(Y)
+     A                                  5  2'O'
+     A                                      DSPATR(UL)
+     A                                  5  4'Property      '
+     A                                      DSPATR(UL)
+     A                                  5 19'Type'
+     A                                      DSPATR(UL)
+     A                                  5 24'Seqn'
+     A                                      DSPATR(UL)
+     A                                  5 29'Description                       -
+     A                                                      '
+     A                                      DSPATR(UL)
+     A*
+     A          R CLASSMNTK2
+     A                                      OVERLAY
+     A                                 24  2'F3=Exit'
+     A                                      COLOR(BLU)
+     A                                 24 13'F6=Create'
+     A                                      COLOR(BLU)
+     A                                 24 26'F12=Cancel'
+     A                                      COLOR(BLU)
+     A                                 24 40'F20=Resquence'
+     A                                      COLOR(BLU)
+     A                                 24 66'ENTER=Continue'
+     A                                      COLOR(BLU)
+     A*
+     A          R CLASSMNTW2
+     A                                      CA12(12 'Cancel')
+     A  47                                  CF04(04 'Search Data Types')
+     A                                      WINDOW(13 2 10 75)
+     A                                      WDWBORDER((*COLOR BLU) (*DSPATR RI)-
+     A                                       (*CHAR '        '))
+     A                                  1  1'Press ENTER to'
+     A            W2ACTION       6A  O  1 16DSPATR(HI)
+     A  47                              1 40'F4=Types'
+     A                                      COLOR(BLU)
+     A                                  1 66'F12=Cancel'
+     A                                      COLOR(BLU)
+     A                                  3  1'Property      '
+     A                                      DSPATR(UL)
+     A                                  3 16'Type'
+     A                                      DSPATR(UL)
+     A                                  3 21'Seqn'
+     A                                      DSPATR(UL)
+     A                                  3 26'Description                       -
+     A                                                      '
+     A                                      DSPATR(UL)
+     A            W2PROPERTY    14A  B  4  1
+     A  42                                  COLOR(YLW)
+     A N42                                  DSPATR(PR)
+     A  81                                  ERRMSG('A property name is required-
+     A                                      .' 81)
+     A  85                                  ERRMSG('Property name already exist-
+     A                                      s for this class.' 85)
+     A  86                                  ERRMSG('Subtable values already exi-
+     A                                      st for this class/property.' 86)
+     A  87                                  ERRMSG('Property name reserved for -
+     A                                      metadata.' 87)
+     A            W2DATATYPE     4A  B  4 16
+     A  43                                  COLOR(YLW)
+     A                                      DSPATR(PR)
+     A  82                                  ERRMSG('A valid data type is requir-
+     A                                      ed' 82)
+     A            W2SEQUENCE     4Y 0B  4 21EDTCDE(Z)
+     A  44                                  COLOR(YLW)
+     A N44                                  DSPATR(PR)
+     A  83                                  ERRMSG('A sequence number is requir-
+     A                                      ed.' 83)
+     A            W2DESCRIP     50A  B  4 26
+     A  45                                  COLOR(YLW)
+     A N45                                  DSPATR(PR)
+     A  84                                  ERRMSG('A description is required.'-
+     A                                       84)
+     A                                  5 17'|'
+     A                                  6 17'+------>'
+     A            W2TYPEDESC    50A  O  6 26
+     A  48                              7  1'Link Class    '
+     A                                      DSPATR(UL)
+     A  48        W2LNKCLASS    14A  B  8  1
+     A  48                                  COLOR(YLW)
+     A  88                                  ERRMSG('Invalid class name' 88)
+     A  48                              8 17'(or blank for any class)'
+     A*

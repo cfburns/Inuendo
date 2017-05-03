@@ -1,0 +1,81 @@
+     A**************************************************************************
+     A*
+     A*  Inuendo 1.2 (Alpha release) - STANDARD ENTITY BUSINESS RULES
+     A*
+     A*  Copyright (C) 2012, 2017  Christopher F. Burns Sr.
+     A*    c/o The Inuendo Project (http://inuendo.us).
+     A*
+     A*  This program is free software: you can redistribute it and/or modify
+     A*  it under the terms of the GNU General Public License as published by
+     A*  the Free Software Foundation, either version 3 of the License, or
+     A*  (at your option) any later version.
+     A*
+     A*  This program is distributed in the hope that it will be useful,
+     A*  but WITHOUT ANY WARRANTY; without even the implied warranty of
+     A*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     A*  GNU General Public License for more details.
+     A*
+     A*  You should have received a copy of the GNU General Public License
+     A*  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+     A*
+     A**************************************************************************
+     A*
+     A                                      DSPSIZ(24 80 *DS3)
+     A                                      INDARA
+     A*
+     A**************************************************************************
+     A*  SEARCH FOR ENTITY
+     A**************************************************************************
+     A*
+     A          R SCHENTS1                  SFL
+     A            S1ENTITYID    20S 0H
+     A            S1SELECT       1A  B  8  7COLOR(YLW)
+     A N36                                  DSPATR(PR)
+     A N36                                  DSPATR(ND)
+     A            S1CLASS       14A  O  8  9
+     A            S1LEGACYA     18A  O  8 25
+     A            S1DESCRIP     25A  O  8 45
+     A  36                                  DSPATR(UL)
+     A*
+     A          R SCHENTC1                  SFLCTL(SCHENTS1)
+     A                                      CA12(12 'Cancel')
+     A  31                                  SFLDSP
+     A  31                                  SFLDSPCTL
+     A N31                                  SFLCLR
+     A  31                                  SFLEND(*MORE)
+     A                                      SFLSIZ(0100)
+     A                                      SFLPAG(0010)
+     A                                      WINDOW(3 2 18 74 *NOMSGLIN)
+     A                                      WDWBORDER((*COLOR BLU) (*DSPATR RI)-
+     A                                       (*CHAR '        '))
+     A                                  1  1'ENTER'
+     A                                      COLOR(BLU)
+     A                                  1 29'Entity Search'
+     A                                      COLOR(BLU)
+     A                                      DSPATR(RI)
+     A                                  1 65'F12=Cancel'
+     A                                      COLOR(BLU)
+     A                                  3  9'Class         '
+     A                                      DSPATR(UL)
+     A                                  3 25'Legacy ID         '
+     A                                      DSPATR(UL)
+     A                                  3 45'Description              '
+     A                                      DSPATR(UL)
+     A                                  4  1'Parent:'
+     A            C1PARCLASS    14A  O  4  9
+     A N37        C1PARLEGA     18A  O  4 25
+     A  37        C1PARLEGN     18Y 0O  4 25EDTCDE(4)
+     A                                  5  1'Search:'
+     A            C1SCHCLASS    14A  O  5  9DSPATR(HI)
+     A N37        C1SCHLEGA     18A  B  5 25COLOR(YLW)
+     A  37        C1SCHLEGN     18Y 0B  5 25COLOR(YLW)
+     A                                      EDTCDE(4)
+     A            C1SCHDESC     25A  B  5 45COLOR(YLW)
+     A            C1PARDESC     25A  O  4 45
+     A                                  7  1'Select:'
+     A                                      DSPATR(UL)
+     A*
+     A          R SCHENTD1
+     A                                      ASSUME
+     A                                 24 79' '
+     A*

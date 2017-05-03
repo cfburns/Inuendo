@@ -1,0 +1,54 @@
+/******************************************************************************/
+/*                                                                            */
+/*  Inuendo 1.2 (Alpha release) - DISPLAY SESSION MOMEMT                      */
+/*                                                                            */
+/*  Copyright (C) 2012, 2017  Christopher F. Burns Sr.                        */
+/*    c/o The Inuendo Project (http://inuendo.us).                            */
+/*                                                                            */
+/*  This program is free software: you can redistribute it and/or modify      */
+/*  it under the terms of the GNU General Public License as published by      */
+/*  the Free Software Foundation, either version 3 of the License, or         */
+/*  (at your option) any later version.                                       */
+/*                                                                            */
+/*  This program is distributed in the hope that it will be useful,           */
+/*  but WITHOUT ANY WARRANTY; without even the implied warranty of            */
+/*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             */
+/*  GNU General Public License for more details.                              */
+/*                                                                            */
+/*  You should have received a copy of the GNU General Public License         */
+/*  along with this program.  If not, see <http://www.gnu.org/licenses/>.     */
+/*                                                                            */
+/******************************************************************************/
+/*                                                                            */
+/*  Use as command processing program for command DSPSSNMOM.                  */
+/*                                                                            */
+/*  Compile with CRTCLMOD and bind with CRTPGM, specifying BNDDIR('INUENDO'). */
+/*                                                                            */
+/******************************************************************************/
+
+             PGM
+
+             DCL        VAR(&MOMTACTV) TYPE(*LGL)
+             DCL        VAR(&SESSMOMT) TYPE(*CHAR) LEN(26)
+             DCL        VAR(&MESGTEXT) TYPE(*CHAR) LEN(80)
+
+             CALLPRC    PRC(SESSIONMOMENTACTIVE) RTNVAL(&MOMTACTV)
+
+             IF         COND(&MOMTACTV *EQ '0') THEN(CHGVAR +
+                          VAR(&MESGTEXT) VALUE('No session moment +
+                          currently active.'))
+
+             ELSE       CMD(DO)
+
+             CALLPRC    PRC(GETSESSIONMOMENT) RTNVAL(&SESSMOMT)
+
+             CHGVAR     VAR(&MESGTEXT) VALUE('Session Moment +
+                          currently set to' *BCAT &SESSMOMT *TCAT +
+                          '.  Updates suspended.')
+
+             ENDDO
+
+             SNDPGMMSG  MSG(&MESGTEXT)
+
+             ENDPGM
+

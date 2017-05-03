@@ -1,0 +1,66 @@
+     A**************************************************************************
+     A*
+     A*  Inuendo 1.2 (Alpha release) - MAIN MENU
+     A*
+     A*  Copyright (C) 2012, 2017  Christopher F. Burns Sr.
+     A*    c/o The Inuendo Project (http://inuendo.us).
+     A*
+     A*  This program is free software: you can redistribute it and/or modify
+     A*  it under the terms of the GNU General Public License as published by
+     A*  the Free Software Foundation, either version 3 of the License, or
+     A*  (at your option) any later version.
+     A*
+     A*  This program is distributed in the hope that it will be useful,
+     A*  but WITHOUT ANY WARRANTY; without even the implied warranty of
+     A*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     A*  GNU General Public License for more details.
+     A*
+     A*  You should have received a copy of the GNU General Public License
+     A*  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+     A*
+     A**************************************************************************
+     A*
+     A* Free Form Menu: INUENDO
+     A*
+     A                                      DSPSIZ(24 80 *DS3)
+     A                                      CHGINPDFT
+     A                                      INDARA
+     A                                      PRINT(*LIBL/QSYSPRT)
+     A*
+     A          R INUENDO
+     A                                      LOCK
+     A                                      SLNO(01)
+     A                                      CLRL(*ALL)
+     A                                      ALWROL
+     A                                      CF03
+     A                                      HELP
+     A                                      HOME
+     A                                      HLPRTN
+     A                                  1  2'INUENDO'
+     A                                      COLOR(BLU)
+     A                                  1 33'INUENDO Menu'
+     A                                      DSPATR(HI)
+     A                                  3  2'Select one of the following:'
+     A                                      COLOR(BLU)
+     A                                  5  7'1.'
+     A                                  5 10'Class/Property Maintenance'
+     A                                  6  7'2.'
+     A                                  6 10'Set Session Moment'
+     A                                  7  7'3.'
+     A                                  7 10'Display Session Moment'
+     A                                  8  7'4.'
+     A                                  8 10'Clear Session Moment'
+     A                                  9  7'5.'
+     A                                 10  7'6.'
+     A                                 11  7'7.'
+     A                                 12  7'8.'
+     A                                 13  7'9.'
+     A                                 14  6'10.'
+     A                                 16  6'90.'
+     A                                 16 10'Sign off'
+     A*
+     A* CMDPROMPT  Do not delete this DDS spec.
+     A*
+     A                                019  2'Selection or command              -
+     A                                          '
+     A*

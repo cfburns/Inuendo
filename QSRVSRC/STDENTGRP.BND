@@ -1,0 +1,60 @@
+/******************************************************************************/
+/*                                                                            */
+/*  Inuendo 1.2 - STANDARD ENTITY GROUP FUNCTIONS (EXPORTS)                   */
+/*                                                                            */
+/*  Copyright (C) 2012, 2017  Christopher F. Burns Sr.                        */
+/*    c/o The Inuendo Project (http://inuendo.us).                            */
+/*                                                                            */
+/*  This program is free software: you can redistribute it and/or modify      */
+/*  it under the terms of the GNU General Public License as published by      */
+/*  the Free Software Foundation, either version 3 of the License, or         */
+/*  (at your option) any later version.                                       */
+/*                                                                            */
+/*  This program is distributed in the hope that it will be useful,           */
+/*  but WITHOUT ANY WARRANTY; without even the implied warranty of            */
+/*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             */
+/*  GNU General Public License for more details.                              */
+/*                                                                            */
+/*  You should have received a copy of the GNU General Public License         */
+/*  along with this program.  If not, see <http://www.gnu.org/licenses/>.     */
+/*                                                                            */
+/******************************************************************************/
+
+             STRPGMEXP  SIGNATURE('STDENTGRP')
+             EXPORT     SYMBOL(ENTITYGROUPDATE)
+             EXPORT     SYMBOL(ENTITYGROUPDATERANGEM)
+             EXPORT     SYMBOL(ENTITYGROUPDATERANGE)
+             EXPORT     SYMBOL(ENTITYGROUPDATEVALUEM)
+             EXPORT     SYMBOL(ENTITYGROUPDATEVALUE)
+             EXPORT     SYMBOL(ENTITYGROUPFLAG)
+             EXPORT     SYMBOL(ENTITYGROUPFLAGRANGEM)
+             EXPORT     SYMBOL(ENTITYGROUPFLAGRANGE)
+             EXPORT     SYMBOL(ENTITYGROUPFLAGVALUEM)
+             EXPORT     SYMBOL(ENTITYGROUPFLAGVALUE)
+             EXPORT     SYMBOL(ENTITYGROUPNOTE)
+             EXPORT     SYMBOL(ENTITYGROUPNOTERANGEM)
+             EXPORT     SYMBOL(ENTITYGROUPNOTERANGE)
+             EXPORT     SYMBOL(ENTITYGROUPNOTEVALUEM)
+             EXPORT     SYMBOL(ENTITYGROUPNOTEVALUE)
+             EXPORT     SYMBOL(ENTITYGROUPNUMB)
+             EXPORT     SYMBOL(ENTITYGROUPNUMBRANGEM)
+             EXPORT     SYMBOL(ENTITYGROUPNUMBRANGE)
+             EXPORT     SYMBOL(ENTITYGROUPNUMBVALUEM)
+             EXPORT     SYMBOL(ENTITYGROUPNUMBVALUE)
+             EXPORT     SYMBOL(ENTITYGROUPNOTX)
+             EXPORT     SYMBOL(ENTITYGROUPNOTXRANGEM)
+             EXPORT     SYMBOL(ENTITYGROUPNOTXRANGE)
+             EXPORT     SYMBOL(ENTITYGROUPNOTXVALUEM)
+             EXPORT     SYMBOL(ENTITYGROUPNOTXVALUE)
+             EXPORT     SYMBOL(ENTITYGROUPNUMX)
+             EXPORT     SYMBOL(ENTITYGROUPNUMXRANGEM)
+             EXPORT     SYMBOL(ENTITYGROUPNUMXRANGE)
+             EXPORT     SYMBOL(ENTITYGROUPNUMXVALUEM)
+             EXPORT     SYMBOL(ENTITYGROUPNUMXVALUE)
+             EXPORT     SYMBOL(ENTITYGROUPDATX)
+             EXPORT     SYMBOL(ENTITYGROUPDATXRANGEM)
+             EXPORT     SYMBOL(ENTITYGROUPDATXRANGE)
+             EXPORT     SYMBOL(ENTITYGROUPDATXVALUEM)
+             EXPORT     SYMBOL(ENTITYGROUPDATXVALUE)
+             ENDPGMEXP
+

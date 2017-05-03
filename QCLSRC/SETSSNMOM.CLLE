@@ -1,0 +1,55 @@
+/******************************************************************************/
+/*                                                                            */
+/*  Inuendo 1.2 (Alpha release) - SET SESSION MOMEMT                          */
+/*                                                                            */
+/*  Copyright (C) 2012, 2017  Christopher F. Burns Sr.                        */
+/*    c/o The Inuendo Project (http://inuendo.us).                            */
+/*                                                                            */
+/*  This program is free software: you can redistribute it and/or modify      */
+/*  it under the terms of the GNU General Public License as published by      */
+/*  the Free Software Foundation, either version 3 of the License, or         */
+/*  (at your option) any later version.                                       */
+/*                                                                            */
+/*  This program is distributed in the hope that it will be useful,           */
+/*  but WITHOUT ANY WARRANTY; without even the implied warranty of            */
+/*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             */
+/*  GNU General Public License for more details.                              */
+/*                                                                            */
+/*  You should have received a copy of the GNU General Public License         */
+/*  along with this program.  If not, see <http://www.gnu.org/licenses/>.     */
+/*                                                                            */
+/******************************************************************************/
+/*                                                                            */
+/*  Use as command processing program for command SETSSNMOM.                  */
+/*                                                                            */
+/*  Compile with CRTCLMOD and bind with CRTPGM, specifying BNDDIR('INUENDO'). */
+/*                                                                            */
+/******************************************************************************/
+
+             PGM        PARM(&SESSDATE &SESSTIME &SESSMICR)
+
+             DCL        VAR(&SESSDATE) TYPE(*CHAR) LEN(7)
+             DCL        VAR(&SESSTIME) TYPE(*CHAR) LEN(6)
+             DCL        VAR(&SESSMICR) TYPE(*INT)
+             DCL        VAR(&SUCCESSF) TYPE(*LGL)
+             DCL        VAR(&SESSMOMT) TYPE(*CHAR) LEN(26)
+             DCL        VAR(&MESGTEXT) TYPE(*CHAR) LEN(80)
+
+             CALLPRC    PRC(SETSESSIONMOMENT) PARM((&SESSDATE) +
+                          (&SESSTIME) (&SESSMICR)) RTNVAL(&SUCCESSF)
+
+             IF         COND(&SUCCESSF *EQ '1') THEN(CALLPRC +
+                          PRC(GETSESSIONMOMENT) RTNVAL(&SESSMOMT))
+
+             IF         COND(&SUCCESSF *EQ '1') THEN(CHGVAR +
+                          VAR(&MESGTEXT) VALUE('Session Moment set +
+                          to' *BCAT &SESSMOMT *TCAT '.  Updates +
+                          suspended.'))
+
+             ELSE       CMD(CHGVAR VAR(&MESGTEXT) VALUE('Attempt to +
+                          change Session Moment failed.'))
+
+             SNDPGMMSG  MSG(&MESGTEXT)
+
+             ENDPGM
+
