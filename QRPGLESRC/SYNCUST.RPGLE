@@ -615,7 +615,7 @@
 
        if FirstSyn and imgaft.cmcrlm > 0
        or imgaft.cmcrlm <> imgbef.cmcrlm;                                    // if field changes
-         putNumx(CustomerID : 'CREDITLIMIT'    : imgaft.cmcrlm);             // put numb to subtable
+         putNumb(CustomerID : 'CREDITLIMIT'    : imgaft.cmcrlm);             // put numb to subtable
        endif;                                                                // if field changes
 
        if FirstSyn and imgaft.cmecrl > 0

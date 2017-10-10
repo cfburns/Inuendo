@@ -1003,9 +1003,9 @@
          Property like(EntHeadI.Descriptor) const;                           // property path
        end-pi;                                                               // valid property
 
-       dcl-s PropertyX     like(EntFlagI.Property);                          // property nickname
+       dcl-s PropertyX     like(EntHeadI.Descriptor);                        // property nickname
        dcl-s ThisLevelProp like(EntPropI.Property);                          // this level property
-       dcl-s NextLevelProp like(EntPropI.Property);                          // next level property
+       dcl-s NextLevelProp like(EntHeadI.Descriptor);                        // next level property
        dcl-s NextLevelID   like(EntHeadI.EntityID);                          // next level entity ID
        dcl-s DelimiterPos  packed(3);                                        // delimiter position
 
