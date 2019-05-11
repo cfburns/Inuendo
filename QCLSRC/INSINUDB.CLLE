@@ -2,7 +2,7 @@
 /*                                                                            */
 /*  Inuendo 1.2 (Alpha release) - INSTALLATION SCRIPT                         */
 /*                                                                            */
-/*  Copyright (C) 2012, 2017  Christopher F. Burns Sr.                        */
+/*  Copyright (C) 2012, 2019  Christopher F. Burns Sr.                        */
 /*    c/o The Inuendo Project (http://inuendo.us).                            */
 /*                                                                            */
 /*  This program is free software: you can redistribute it and/or modify      */
@@ -350,6 +350,31 @@
                         MONMSG     MSGID(CPF0000)
 
              ADDBNDDIRE BNDDIR(&OBJLIB/INUENDO) OBJ((STDENTUTIL +
+                          *SRVPGM *IMMED))
+                        MONMSG     MSGID(CPF0000)
+
+
+             CRTDSPF    FILE(&OBJLIB/STD5250UTL) +
+                          SRCFILE(&OBJLIB/QDDSSRC) RSTDSP(*YES) +
+                          REPLACE(*YES)
+                        MONMSG     MSGID(CPF0000)
+
+             CRTSQLRPGI OBJ(&OBJLIB/STD5250UTL) +
+                          SRCFILE(&OBJLIB/QRPGLESRC) COMMIT(*NONE) +
+                          OBJTYPE(*MODULE) RPGPPOPT(*LVL2) +
+                          DATFMT(*ISO) REPLACE(*YES) DBGVIEW(*SOURCE)
+                        MONMSG     MSGID(CPF0000)
+
+             CRTSRVPGM  SRVPGM(&OBJLIB/STD5250UTL) +
+                          SRCFILE(&OBJLIB/QSRVSRC) BNDDIR(INUENDO) +
+                          ACTGRP(INUENDO) OPTION(*DUPPROC) +
+                          REPLACE(*YES) AUT(*ALL)
+                        MONMSG     MSGID(CPF0000)
+
+             DLTMOD     MODULE(&OBJLIB/STD5250UTL)
+                        MONMSG     MSGID(CPF0000)
+
+             ADDBNDDIRE BNDDIR(&OBJLIB/INUENDO) OBJ((STD5250UTL +
                           *SRVPGM *IMMED))
                         MONMSG     MSGID(CPF0000)
 
