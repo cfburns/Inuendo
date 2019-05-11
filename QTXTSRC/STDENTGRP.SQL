@@ -2,7 +2,7 @@
 /*                                                                            */
 /*  Inuendo 1.2 - STANDARD ENTITY GROUP FUNCTIONS (SQL)                       */
 /*                                                                            */
-/*  Copyright (C) 2012, 2017  Christopher F. Burns Sr.                        */
+/*  Copyright (C) 2012, 2019  Christopher F. Burns Sr.                        */
 /*    c/o The Inuendo Project (http://inuendo.us).                            */
 /*                                                                            */
 /*  This program is free software: you can redistribute it and/or modify      */
@@ -642,5 +642,58 @@ COMMENT ON SPECIFIC PROCEDURE ENTITYGROUPNUMXVALUE
 
 GRANT ALTER , EXECUTE
 ON SPECIFIC PROCEDURE ENTITYGROUPNUMXVALUE
+TO PUBLIC ;
+
+
+/******************************************************************************/
+/*  ENTITY GROUP BY LINK - RESULT SET (DIFFERENT PARAMETER VARIATIONS)        */
+/******************************************************************************/
+
+CREATE OR REPLACE PROCEDURE ENTITYGROUPLINKVALUE (
+  IN PARENTID BIGINT ,
+  IN CLASS VARCHAR(14) ,
+  IN PROPERTY VARCHAR(254) ,
+  IN "VALUE" BIGINT ,
+  IN MOMENT TIMESTAMP)
+  DYNAMIC RESULT SETS 1
+  LANGUAGE RPGLE
+  SPECIFIC ENTITYGROUPLINKVALUEM
+  NOT DETERMINISTIC
+  NOT FENCED
+  PROGRAM TYPE SUB
+  READS SQL DATA
+  CALLED ON NULL INPUT
+  EXTERNAL NAME STDENTGRP(ENTITYGROUPLINK)
+  PARAMETER STYLE GENERAL;
+
+COMMENT ON SPECIFIC PROCEDURE ENTITYGROUPLINKVALUEM
+  IS 'Entity Group By Link Value (w/Moment)' ;
+
+GRANT ALTER , EXECUTE
+ON SPECIFIC PROCEDURE ENTITYGROUPLINKVALUEM
+TO PUBLIC ;
+
+
+CREATE OR REPLACE PROCEDURE ENTITYGROUPLINKVALUE (
+  IN PARENTID BIGINT ,
+  IN CLASS VARCHAR(14) ,
+  IN PROPERTY VARCHAR(254) ,
+  IN "VALUE" BIGINT)
+  DYNAMIC RESULT SETS 1
+  LANGUAGE RPGLE
+  SPECIFIC ENTITYGROUPLINKVALUE
+  NOT DETERMINISTIC
+  NOT FENCED
+  PROGRAM TYPE SUB
+  READS SQL DATA
+  CALLED ON NULL INPUT
+  EXTERNAL NAME STDENTGRP(ENTITYGROUPLINKVALUE)
+  PARAMETER STYLE GENERAL;
+
+COMMENT ON SPECIFIC PROCEDURE ENTITYGROUPLINKVALUE
+  IS 'Entity Group By Link Value' ;
+
+GRANT ALTER , EXECUTE
+ON SPECIFIC PROCEDURE ENTITYGROUPLINKVALUE
 TO PUBLIC ;
 

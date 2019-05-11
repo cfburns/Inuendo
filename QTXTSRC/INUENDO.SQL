@@ -2,7 +2,7 @@
 /*                                                                            */
 /*  Inuendo 1.2 (Alpha release) - BASE TABLE BUILDS                           */
 /*                                                                            */
-/*  Copyright (C) 2012, 2017  Christopher F. Burns Sr.                        */
+/*  Copyright (C) 2012, 2019  Christopher F. Burns Sr.                        */
 /*    c/o The Inuendo Project (http://inuendo.us).                            */
 /*                                                                            */
 /*  This program is free software: you can redistribute it and/or modify      */
@@ -43,7 +43,7 @@ LABEL ON TABLE ENTPROP
 LABEL ON COLUMN ENTPROP
 ( CLASS IS 'CLASS                ' ,
  PROPERTY IS 'PROPERTY            NAME' ,
- DATATYPE IS 'DATE                TYPE' ,
+ DATATYPE IS 'DATA                TYPE' ,
  "DESCRIPTOR" IS 'DESCRIPTION          ' ,
  SEQUENCER IS 'PROPERTY            SEQUENCER' ,
  PARTCLASS IS 'PARTNER             CLASS' ) ;
@@ -51,7 +51,7 @@ LABEL ON COLUMN ENTPROP
 LABEL ON COLUMN ENTPROP
 ( CLASS TEXT IS 'CLASS' ,
  PROPERTY TEXT IS 'PROPERTY NAME' ,
- DATATYPE TEXT IS 'DATA TU[PE' ,
+ DATATYPE TEXT IS 'DATA TYPE' ,
  "DESCRIPTOR" TEXT IS 'DESCRIPTION' ,
  SEQUENCER TEXT IS 'PROPERTY SEQUENCER' ,
  PARTCLASS TEXT IS 'PARTNER CLASS' ) ;

@@ -2,7 +2,7 @@
 /*                                                                            */
 /*  Inuendo 1.2 (Alpha release) - WHO DONE IT FUNCTIONS (SQL)                 */
 /*                                                                            */
-/*  Copyright (C) 2012, 2017  Christopher F. Burns Sr.                        */
+/*  Copyright (C) 2012, 2019  Christopher F. Burns Sr.                        */
 /*    c/o The Inuendo Project (http://inuendo.us).                            */
 /*                                                                            */
 /*  This program is free software: you can redistribute it and/or modify      */
