@@ -1,0 +1,89 @@
+     A**************************************************************************
+     A*
+     A*  Inuendo 1.2 (Alpha release) - STANDARD 5250 UTILITIES
+     A*
+     A*  Copyright (C) 2012, 2019  Christopher F. Burns Sr.
+     A*    c/o The Inuendo Project (http://inuendo.us).
+     A*
+     A*  This program is free software: you can redistribute it and/or modify
+     A*  it under the terms of the GNU General Public License as published by
+     A*  the Free Software Foundation, either version 3 of the License, or
+     A*  (at your option) any later version.
+     A*
+     A*  This program is distributed in the hope that it will be useful,
+     A*  but WITHOUT ANY WARRANTY; without even the implied warranty of
+     A*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     A*  GNU General Public License for more details.
+     A*
+     A*  You should have received a copy of the GNU General Public License
+     A*  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+     A*
+     A**************************************************************************
+     A*
+     A                                      DSPSIZ(24 80 *DS3)
+     A                                      INDARA
+     A*
+     A*  GENERIC DATE PROMPT
+     A*
+     A          R PROMPTDATE
+     A                                      WINDOW(10 8 3 62 *NOMSGLIN)
+     A                                      OVERLAY
+     A                                      WDWBORDER((*COLOR BLU) (*DSPATR RI)-
+     A                                       (*CHAR '        '))
+     A                                  1 53'YYYY-MM-DD'
+     A                                      DSPATR(UL)
+     A            DATETXT       50A  O  2  1
+     A            DATEVAL         L  B  2 53DATFMT(*ISO)
+     A                                      COLOR(YLW)
+     A            DATEERR       10   O  3 53COLOR(RED)
+     A*
+     A*  GENERIC FLAG PROMPT
+     A*
+     A          R PROMPTFLAG
+     A                                      WINDOW(10 12 3 54 *NOMSGLIN)
+     A                                      OVERLAY
+     A                                      WDWBORDER((*COLOR BLU) (*DSPATR RI)-
+     A                                       (*CHAR '        '))
+     A            FLAGTXT       50A  O  2  1
+     A            FLAGVAL        1A  B  2 54COLOR(YLW)
+     A            FLAGERR       10A  O  3 45COLOR(RED)
+     A*
+     A*  GENERIC DATE PROMPT
+     A*
+     A          R PROMPTNOTE
+     A                                      WINDOW(8 6 7 66 *NOMSGLIN)
+     A                                      OVERLAY
+     A                                      WDWBORDER((*COLOR BLU) (*DSPATR RI)-
+     A                                       (*CHAR '        '))
+     A            NOTETXT       50A  O  2  1
+     A                                  2 55'(Auto-wraps)'
+     A            NOTEVAL1      64A  B  3  3COLOR(YLW)
+     A                                      CHECK(LC)
+     A            NOTEVAL2      64A  B  4  3COLOR(YLW)
+     A                                      CHECK(LC)
+     A            NOTEVAL3      64A  B  5  3COLOR(YLW)
+     A                                      CHECK(LC)
+     A            NOTEVAL4      62A  B  6  3COLOR(YLW)
+     A                                      CHECK(LC)
+     A            NOTEERR       10A  O  7 57COLOR(RED)
+     A*
+     A*  GENERIC NUMBER PROMPT
+     A*
+     A          R PROMPTNUMB
+     A                                      WINDOW(10 2 3 73 *NOMSGLIN)
+     A                                      OVERLAY
+     A                                      WDWBORDER((*COLOR BLU) (*DSPATR RI)-
+     A                                       (*CHAR '        '))
+     A                                  1 53'Max. 5 Decimal Places'
+     A                                      DSPATR(UL)
+     A            NUMBTXT       50A  O  2  1
+     A            NUMBVAL       20Y 5B  2 53COLOR(YLW)
+     A                                      EDTCDE(4)
+     A            NUMBERR       10A  O  3 64COLOR(RED)
+     A*
+     A*  DUMMY FORMAT FOR ASSUME KEYWORD
+     A*
+     A          R DUMMY
+     A                                      ASSUME
+     A                                 24 79' '
+     A*
