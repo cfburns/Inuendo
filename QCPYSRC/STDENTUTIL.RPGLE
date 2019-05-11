@@ -2,7 +2,7 @@
       *                                                                                            *
       *  Inuendo 1.2 (Alpha release) - STANDARD ENTITY UTILITIES (PROTOTYPES & STORAGE)            *
       *                                                                                            *
-      *  Copyright (C) 2012, 2017  Christopher F. Burns Sr.                                        *
+      *  Copyright (C) 2012, 2019  Christopher F. Burns Sr.                                        *
       *    c/o The Inuendo Project (http://inuendo.us).                                            *
       *                                                                                            *
       *  Use RPG /COPY statement in application programs to include this member.                   *

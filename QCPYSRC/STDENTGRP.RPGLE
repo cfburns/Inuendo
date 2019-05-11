@@ -2,7 +2,7 @@
       *                                                                                            *
       *  Inuendo 1.2 - STANDARD ENTITY GROUP FUNCTIONS (PROTOTYPES & STORAGE)                      *
       *                                                                                            *
-      *  Copyright (C) 2012, 2017  Christopher F. Burns Sr.                                        *
+      *  Copyright (C) 2012, 2019  Christopher F. Burns Sr.                                        *
       *    c/o The Inuendo Project (http://inuendo.us).                                            *
       *                                                                                            *
       *  Use RPG /COPY statement in application programs to include this member.                   *
@@ -336,6 +336,27 @@
          Property   like(EntHeadG.Descriptor) const;                         // property name/path
          Value      like(EntDateG.Value)      const;                         // comparison value
        end-pr;                                                               // entity group by datx
+
+
+      **********************************************************************************************
+      *  FUNCTIONS BASED ON LINK PROPERTIES, WITH SQL WRAPPERS
+      **********************************************************************************************
+
+       dcl-pr EntityGroupLink;                                               // entity group by link
+         ParentID   like(EntHeadG.ParentID)   const;                         // parent entity ID
+         Class      like(EntHeadG.Class)      const;                         // entity class
+         Property   like(EntHeadG.Descriptor) const;                         // property name/path
+         Value      like(EntLinkG.Value)      const;                         // single value
+         Moment     like(EntLinkG.ChangeTime) const options(*nopass);        // moment in time
+       end-pr;                                                               // entity group by link
+
+       dcl-pr EntityGroupLinkValue;                                          // entity group by link
+         ParentID   like(EntHeadG.ParentID)   const;                         // parent entity ID
+         Class      like(EntHeadG.Class)      const;                         // entity class
+         Property   like(EntHeadG.Descriptor) const;                         // property name/path
+         Value      like(EntLinkG.Value)      const;                         // comparison value
+       end-pr;                                                               // entity group by link
+
 
       **********************************************************************************************
       *  WORKING STORAGE TEMPLATES AND CONSTANTS

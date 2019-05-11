@@ -1,9 +1,8 @@
       **********************************************************************************************
       *                                                                                            *
-      *  Inuendo 1.2 (Alpha release) - STANDARD PROGRAM STATUS DATA STRUCTURE DEFINITION.          *
+      *  STANDARD PROGRAM STATUS DATA STRUCTURE DEFINITION.                                        *
       *                                                                                            *
-      *  Copyright (C) 2012, 2017  Christopher F. Burns Sr.                                        *
-      *    c/o The Inuendo Project (http://inuendo.us).                                            *
+      *  Copyright (C) 2012, 2019  Christopher F. Burns Sr.                                        *
       *                                                                                            *
       *  Use RPG /COPY statement in application programs to include this member.                   *
       *                                                                                            *
