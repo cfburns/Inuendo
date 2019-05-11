@@ -2,7 +2,7 @@
       *                                                                                            *
       *  Inuendo 1.2 (Alpha release) - STANDARD ENTITY OUTPUT FUNCTIONS                            *
       *                                                                                            *
-      *  Copyright (C) 2012, 2017  Christopher F. Burns Sr.                                        *
+      *  Copyright (C) 2012, 2019  Christopher F. Burns Sr.                                        *
       *    c/o The Inuendo Project (http://inuendo.us).                                            *
       *                                                                                            *
       *  This program is free software: you can redistribute it and/or modify                      *
@@ -704,8 +704,8 @@
        end-pi;                                                               // put encrypted number
 
        dcl-ds *n;                                                            // type conversion
-         ChrNumbX char(25);                                                  // character number
-         DecNumbX zoned(25:7) overlay(ChrNumbX);                             // number value
+         ChrNumbX char(23);                                                  // character number
+         DecNumbX zoned(23:5) overlay(ChrNumbX);                             // number value
        end-ds;                                                               // type conversion
 
        dcl-ds EntNumxX likeds(EntNumxO) based(ePtr);                         // sub table record
@@ -828,7 +828,6 @@
        endmon;                                                               // catch all errors
 
        end-proc;                                                             // put encrypted date
-
 
 
       **********************************************************************************************
@@ -1077,8 +1076,6 @@
            putNotx(newEntityID:PropertyX:getNotx(EntityID:PropertyX));       // put current value
          elseif DataTypeX = 'NUMX';                                          // or encrypted number
            putNumx(newEntityID:PropertyX:getNumx(EntityID:PropertyX));       // put current value
-         elseif DataTypeX = 'DATX';                                          // or encrypted date
-           putDatx(newEntityID:PropertyX:getDatx(EntityID:PropertyX));       // put current value
          endif;                                                              // if flag type
 
          exec sql fetch from dupEntityC1 into :PropertyX, :DataTypeX;        // fetch next property
@@ -1235,8 +1232,6 @@
              putNotx(newEntityIDx:PropertyX:getNotx(EntityID:PropertyX));    // put current value
            elseif DataTypeX = 'NUMX';                                        // or encrypted number
              putNumx(newEntityIDx:PropertyX:getNumx(EntityID:PropertyX));    // put current value
-           elseif DataTypeX = 'DATX';                                        // or encrypted date
-             putDatx(newEntityIDx:PropertyX:getDatx(EntityID:PropertyX));    // put current value
            endif;                                                            // if flag type
 
            exec sql fetch from copyEntityC1 into :PropertyX, :DataTypeX;     // fetch next property
@@ -1332,4 +1327,20 @@
        return %addr(PropValueX);                                             // address of recd base
 
        end-proc;                                                             // fill prop value recd
+
+      **********************************************************************************************
+
+       // Generates a time-based legacy numeric value for entities without legacy identifiers.
+
+       dcl-proc LegacyNumValue export;                                       // legacy numeric value
+
+       dcl-pi LegacyNumValue like(EntHeadO.LegacyN) end-pi;                  // legacy numeric value
+
+       dcl-s TimeIndex timestamp(3);                                         // time stamp index
+
+       TimeIndex = %timestamp();                                             // current time stamp
+
+       return %dec(TimeIndex);                                               // expressed as big int
+
+       end-proc;                                                             // legacy numeric value
 

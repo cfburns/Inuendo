@@ -2,7 +2,7 @@
       *                                                                                            *
       *  Inuendo 1.2 - STANDARD ENTITY GROUP FUNCTIONS (PROCEDURES)                                *
       *                                                                                            *
-      *  Copyright (C) 2012, 2017  Christopher F. Burns Sr.                                        *
+      *  Copyright (C) 2012, 2019  Christopher F. Burns Sr.                                        *
       *    c/o The Inuendo Project (http://inuendo.us).                                            *
       *                                                                                            *
       *  This program is free software: you can redistribute it and/or modify                      *
@@ -997,4 +997,68 @@
 
        end-proc;                                                             // entity group by datx
 
+
+      **********************************************************************************************
+      *  FUNCTIONS BASED ON LINK PROPERTIES
+      **********************************************************************************************
+
+       // single value, with moment parameter
+
+       dcl-proc EntityGroupLink export;                                      // entity group by link
+
+       dcl-pi EntityGroupLink;                                               // entity group by link
+         ParentID   like(EntHeadG.ParentID)   const;                         // parent entity ID
+         Class      like(EntHeadG.Class)      const;                         // entity class
+         Property   like(EntHeadG.Descriptor) const;                         // property name/path
+         Value      like(EntLinkG.Value)      const;                         // single value
+         Moment     like(EntLinkG.ChangeTime) const options(*nopass);        // moment in time
+       end-pi;                                                               // entity group by link
+
+       dcl-s SQLStatement varchar(512);                                      // SQL statement
+       dcl-s RangeLowX    like(EntNumxG.Value);                              // value range low
+       dcl-s RangeHighX   like(EntNumxG.Value);                              // value range high
+       dcl-s MomentX      like(EntHeadG.CreateTime);                         // moment in time
+
+       monitor;                                                              // catch all errors
+
+         if %parms >= 5;                                                     // if moment provided
+           MomentX = Moment;                                                 // use it
+         else;                                                               // no moment provided
+           MomentX = getSessionMoment();                                     // use session moment
+         endif;                                                              // if moment provided
+
+         // headers for any relevant entities with matching link property value.
+
+         exec sql declare EntityGroupLinkC1 cursor for
+           select * from enthead
+             where parentID    = :ParentID
+               and class       = :Class
+               and createtime <= :MomentX
+               and getLink(entityID, :Property, :MomentX) = :Value
+                 order by entityid;                                          // entities w/match
+
+         exec sql open EntityGroupLinkC1;                                    // open cursor
+
+       on-error *all;                                                        // on any error
+
+       endmon;                                                               // catch all errors
+
+       end-proc;                                                             // entity group by link
+
+      **********************************************************************************************
+
+       // single value, no moment parameter
+
+       dcl-proc EntityGroupLinkValue export;                                 // entity group by link
+
+       dcl-pi EntityGroupLinkValue;                                          // entity group by link
+         ParentID   like(EntHeadG.ParentID)   const;                         // parent entity ID
+         Class      like(EntHeadG.Class)      const;                         // entity class
+         Property   like(EntHeadG.Descriptor) const;                         // property name/path
+         Value      like(EntLinkG.Value)      const;                         // comparison value
+       end-pi;                                                               // entity group by link
+
+       EntityGroupLink(ParentID : Class : Property : Value);                 // pass op-descriptor
+
+       end-proc;                                                             // entity group by link
 

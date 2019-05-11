@@ -2,7 +2,7 @@
       *                                                                                            *
       *  Inuendo 1.2 (Alpha release) - STANDARD ENTITY UTILITIES (PROCEDURES)                      *
       *                                                                                            *
-      *  Copyright (C) 2012, 2017  Christopher F. Burns Sr.                                        *
+      *  Copyright (C) 2012, 2019  Christopher F. Burns Sr.                                        *
       *    c/o The Inuendo Project (http://inuendo.us).                                            *
       *                                                                                            *
       *  This program is free software: you can redistribute it and/or modify                      *
@@ -38,6 +38,7 @@
        end-pi;                                                               // delete an entity
 
        dcl-s ChildIDx     like(EntHeadU.EntityID);                           // child entity ID
+       dcl-s ErrorIDx     like(EntHeadU.EntityID);                           // error entity ID
        dcl-s LevelX       like(EntPropU.Sequencer);                          // dependence level
        dcl-s CascadingX   like(EntFlagU.Value);                              // cascading allowed
        dcl-s HasChildrenX ind;                                               // has children flag
@@ -58,6 +59,30 @@
          return *off;                                                        // return a false
        endif;                                                                // if children exist
 
+       // delete any error entries with this entity as the parent
+
+       exec sql declare DeleteEntityX0 cursor for
+         select entityid from enthead
+           where parentID = :EntityID
+             and class in ('CLASSERROR', 'PROPERROR');                       // all dependent errors
+
+       exec sql open DeleteEntityX0;                                         // open cursor
+       exec sql fetch from DeleteEntityX0 into :ErrorIDx;                    // fetch first error
+
+       dow sqlcod = 0;                                                       // while more errors
+         exec sql delete from EntDate where EntityID = :ErrorIDx with nc;    // del subtable entries
+         exec sql delete from EntFlag where EntityID = :ErrorIDx with nc;    // del subtable entries
+         exec sql delete from EntLink where EntityID = :ErrorIDx with nc;    // del subtable entries
+         exec sql delete from EntNote where EntityID = :ErrorIDx with nc;    // del subtable entries
+         exec sql delete from EntNotx where EntityID = :ErrorIDx with nc;    // del subtable entries
+         exec sql delete from EntNumb where EntityID = :ErrorIDx with nc;    // del subtable entries
+         exec sql delete from EntNumx where EntityID = :ErrorIDx with nc;    // del subtable entries
+         exec sql delete from EntHead where EntityID = :ErrorIDx with nc;    // del entity header
+         exec sql fetch from DeleteEntityX0 into :ErrorIDx;                  // fetch first error
+       enddo;                                                                // while more errors
+
+       exec sql close DeleteEntityX0;                                        // close cursor
+
        // delete any subtable entries for this entity
 
        exec sql delete from EntDate where EntityID = :EntityID;              // del subtable entries
@@ -66,7 +91,6 @@
        exec sql delete from EntNotx where EntityID = :EntityID;              // del subtable entries
        exec sql delete from EntNumb where EntityID = :EntityID;              // del subtable entries
        exec sql delete from EntNumx where EntityID = :EntityID;              // del subtable entries
-       exec sql delete from EntDatx where EntityID = :EntityID;              // del subtable entries
 
        // for links, delete any subtable entries not only for this entity,
        //   but also any other entry that links to it in this fashion.
@@ -94,7 +118,7 @@
          exec sql fetch from DeleteEntityX1 into :ChildIDx, :LevelX;         // fetch first child
 
          dow sqlcod = 0;                                                     // while more children
-           DeleteEntity(ChildIDx);                                           // delete this child
+           DeleteEntity(ChildIDx : CascadingX);                              // delete this child
            exec sql fetch from DeleteEntityX1 into :ChildIDx, :LevelX;       // fetch first child
          enddo;                                                              // while more children
 
@@ -215,12 +239,6 @@
            and ChangeTime >= :MomentX;                                       // del subtable entries
 
        exec sql delete from EntNumx
-         where ChangeJnam  = :JobName
-           and ChangeUser  = :JobUser
-           and ChangeJnum  = :JobNumber
-           and ChangeTime >= :MomentX;                                       // del subtable entries
-
-       exec sql delete from EntDatx
          where ChangeJnam  = :JobName
            and ChangeUser  = :JobUser
            and ChangeJnum  = :JobNumber

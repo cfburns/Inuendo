@@ -2,7 +2,7 @@
       *                                                                                            *
       *  Inuendo 1.2 (Alpha release) - TEMPORAL INTEGRITY ENFORCEMENT (ENTNUMB)                    *
       *                                                                                            *
-      *  Copyright (C) 2012, 2017  Christopher F. Burns Sr.                                        *
+      *  Copyright (C) 2012, 2019  Christopher F. Burns Sr.                                        *
       *    c/o The Inuendo Project (http://inuendo.us).                                            *
       *                                                                                            *
       *  Apply as trigger program for delete and update events on ENTNUMB.                         *

@@ -2,7 +2,7 @@
       *                                                                                            *
       *  Inuendo 1.2 (Alpha release) - TEMPORAL INTEGRITY ENFORCEMENT (ENTLINK)                    *
       *                                                                                            *
-      *  Copyright (C) 2012, 2017  Christopher F. Burns Sr.                                        *
+      *  Copyright (C) 2012, 2019  Christopher F. Burns Sr.                                        *
       *    c/o The Inuendo Project (http://inuendo.us).                                            *
       *                                                                                            *
       *  Apply as trigger program for delete and update events on ENTLINK.                         *
@@ -43,8 +43,9 @@
 
        if TrigBuffer.EventCode = '2';                                        // if delete event
 
-         if FiredByProc('DELETEENTITY':'STDENTUTIL')
-         or FiredByProc('ROLLBACKJOB' :'STDENTUTIL');                        // if legitimate
+         if FiredByProc('DELETEENTITY':'STDENTUTIL');                        // if deleting entity
+
+         elseif FiredByProc('ROLLBACKJOB' :'STDENTUTIL');                    // or rolling back
 
            if imgbef.property = 'PARENTID';                                  // if parent metadata
              putParentID( imgbef.EntityID :
@@ -59,7 +60,7 @@
            ErrorIDx =
              newEntityN(imgaft.EntityID : 'PROPERROR' : 0 : IllPropDel);     // create error entity
 
-         endif;                                                              // if not legitimate
+         endif;                                                              // if deleting entity
 
        // Updates are not allowed under any circumstances.
 
