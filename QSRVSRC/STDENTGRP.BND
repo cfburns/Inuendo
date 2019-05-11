@@ -2,7 +2,7 @@
 /*                                                                            */
 /*  Inuendo 1.2 - STANDARD ENTITY GROUP FUNCTIONS (EXPORTS)                   */
 /*                                                                            */
-/*  Copyright (C) 2012, 2017  Christopher F. Burns Sr.                        */
+/*  Copyright (C) 2012, 2019  Christopher F. Burns Sr.                        */
 /*    c/o The Inuendo Project (http://inuendo.us).                            */
 /*                                                                            */
 /*  This program is free software: you can redistribute it and/or modify      */
@@ -56,5 +56,7 @@
              EXPORT     SYMBOL(ENTITYGROUPDATXRANGE)
              EXPORT     SYMBOL(ENTITYGROUPDATXVALUEM)
              EXPORT     SYMBOL(ENTITYGROUPDATXVALUE)
+             EXPORT     SYMBOL(ENTITYGROUPLINK)
+             EXPORT     SYMBOL(ENTITYGROUPLINKVALUE)
              ENDPGMEXP
 
